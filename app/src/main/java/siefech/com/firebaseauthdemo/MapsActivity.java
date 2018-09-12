@@ -157,6 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+        mMap.clear();
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         // Push your location to FireBase

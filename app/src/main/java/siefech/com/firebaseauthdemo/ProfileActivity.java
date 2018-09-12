@@ -22,6 +22,7 @@ import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private Button buttonLogout;
     private Button buttonSearch;
     private static final int PERMISSIONS_REQUEST = 100;
+    private GoogleMap mMap;
 
 
 
@@ -143,10 +145,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
+        mMap.clear();
         //if logout is pressed
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("/geoFireData");
         GeoFire geoFire = new GeoFire(ref);
+        
         if(view == buttonLogout){
             geoFire.removeLocation(firebaseAuth.getUid(), new GeoFire.CompletionListener() {
                 @Override
@@ -154,8 +158,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                 }
             });
+
             //logging out the user
             firebaseAuth.signOut();
+
             //closing activity
             finish();
             //starting login activity
@@ -177,12 +183,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = database.getReference("/geoFireData");
             GeoFire geoFire = new GeoFire(ref);
-            geoFire.setLocation(firebaseAuth.getUid(), new GeoLocation(latitude, longitude), new GeoFire.CompletionListener() {
-                @Override
-                public void onComplete(String key, DatabaseError error) {
+            if (firebaseAuth.getUid() != null){
+                geoFire.setLocation(firebaseAuth.getUid(), new GeoLocation(latitude, longitude), new GeoFire.CompletionListener() {
+                    @Override
+                    public void onComplete(String key, DatabaseError error) {
 
-                }
-            });
+                    }
+                });
+            }
+
         }
 
         @Override
