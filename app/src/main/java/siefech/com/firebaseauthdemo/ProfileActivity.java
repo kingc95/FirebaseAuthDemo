@@ -17,12 +17,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -141,7 +144,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         //if logout is pressed
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("/geoFireData");
+        GeoFire geoFire = new GeoFire(ref);
         if(view == buttonLogout){
+            geoFire.removeLocation(firebaseAuth.getUid(), new GeoFire.CompletionListener() {
+                @Override
+                public void onComplete(String key, DatabaseError error) {
+
+                }
+            });
             //logging out the user
             firebaseAuth.signOut();
             //closing activity
@@ -163,10 +175,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             double longitude = location.getLongitude();
             // Push your location to FireBase
             FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference lat = database.getReference(firebaseAuth.getUid()).child("lat:");
-            lat.setValue(latitude);
-            DatabaseReference log = database.getReference(firebaseAuth.getUid()).child("long:");
-            log.setValue(longitude);
+            DatabaseReference ref = database.getReference("/geoFireData");
+            GeoFire geoFire = new GeoFire(ref);
+            geoFire.setLocation(firebaseAuth.getUid(), new GeoLocation(latitude, longitude), new GeoFire.CompletionListener() {
+                @Override
+                public void onComplete(String key, DatabaseError error) {
+
+                }
+            });
         }
 
         @Override
