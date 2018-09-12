@@ -150,7 +150,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("/geoFireData");
         GeoFire geoFire = new GeoFire(ref);
-        
 
         if(view == buttonLogout){
             geoFire.removeLocation(firebaseAuth.getUid(), new GeoFire.CompletionListener() {
